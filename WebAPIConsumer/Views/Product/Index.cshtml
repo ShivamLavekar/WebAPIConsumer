@@ -1,0 +1,87 @@
+﻿@model IEnumerable<WebAPIConsumer.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Products</h1>
+
+<p>
+    <a class="btn btn-primary" asp-controller="Product" asp-action="AddProduct">Add Product</a>
+</p>
+
+<form asp-action="DeleteSelectedProducts" method="post">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)">
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.pid)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.pimage)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.pname)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.pcat)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.price)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="selectedIds" value="@item.pid">
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.pid)
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.pimage))
+                        {
+                            <img src="@Url.Action("DownloadFile","Product", new { fileName = System.IO.Path.GetFileName(item.pimage) })" width="100" height="100" class="" value="Download" />
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.pname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.pcat)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.price)
+                    </td>
+                    <td>
+                        <a class="btn btn-warning" asp-action="EditProduct" asp-route-id="@item.pid">Edit</a>
+                        <a class="btn btn-danger" asp-action="DeleteProduct" asp-route-id="@item.pid">Delete</a>
+                        <a href="@Url.Action("DownloadFile","Product", new { fileName = System.IO.Path.GetFileName(item.pimage) })" class="btn btn-secondary">Download</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-danger">Delete Selected</button>
+</form>
+
+@section Scripts {
+    <script>
+        function toggleCheckboxes(source) {
+            checkboxes = document.getElementsByName('selectedIds');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
